@@ -35,6 +35,8 @@ client.loop_start()
 #payload = json.dumps({'action': 'test'})
 #qos = 1
 client.publish(topic=topic, payload=payload, qos=qos)
+
+time.sleep(5)
 '''
 
 client.loop_stop()
