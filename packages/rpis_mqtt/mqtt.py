@@ -2,25 +2,24 @@ import time, json, ssl
 import paho.mqtt.client as mqtt
 import gc, platform
 
-retry_count = 0
-
 def on_connect(client, userdata, flags, rc):
     if rc == 0:
             print('[on_connect] Connection OK')
-            retry_count = 0
     else:
             print('[on_connect] Connection Failed :', str(rc))
 
+@static_vars(retry_count=0)
 def on_disconnect(client, userdata, rc=0):
     if rc == 0:
         print('[on_disconnect] Disconnection OK')
+        on_disconnect.retry_count = 0
     else:
         print('[on_disconnect] Disconnection Error, rc :', rc)
-        if retry_count < 5:
-            retry_count += 1
+        if on_disconnect.retry_count < 5:
+            on_disconnect.retry_count += 1
         else:
             print('[on_disconnect] Disconnection Error, client loop stop')
-            retry_count = 0
+            on_disconnect.retry_count = 0
             client.loop_stop()
 
 def on_publish(client, userdata, mid):
