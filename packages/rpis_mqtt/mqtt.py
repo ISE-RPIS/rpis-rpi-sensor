@@ -2,14 +2,25 @@ import time, json, ssl
 import paho.mqtt.client as mqtt
 import gc, platform
 
+retry_count = 0
+
 def on_connect(client, userdata, flags, rc):
     if rc == 0:
             print('[on_connect] Connection OK')
+            retry_count = 0
     else:
             print('[on_connect] Connection Failed :', str(rc))
 
 def on_disconnect(client, userdata, rc=0):
-    print('[on_disconnect] Disconnection OK, rc :', rc)
+    if rc == 0:
+        print('[on_disconnect] Disconnection OK')
+    else:
+        print('[on_disconnect] Disconnection Error, rc :', rc)
+        if retry_count < 5:
+            retry_count += 1
+        else:
+            retry_count = 0
+            client.loop_stop()
 
 def on_publish(client, userdata, mid):
     print('[on_publish] callback mid =', mid)
@@ -120,6 +131,16 @@ class MqttClient:
 
     def publish(self, topic, payload, qos=0, retain=False):
         try:
+            if self.client.is_connected() == False:
+                for i in range(3):
+                    self.debug_print('connection wait...')
+                    time.sleep(5)
+                    if self.client.is_connected():
+                        break
+                if self.client.is_connected() == False:
+                    self.debug_print('connection failed')
+                    self.disconnect()
+                    return
             if type(topic) != str:
                 raise TypeError('"topic" type must be str!')
             elif len(topic) == 0:
@@ -143,6 +164,16 @@ class MqttClient:
 
     def subscribe(self, topic, qos=0, options=None, properties=None):
         try:
+            if self.client.is_connected() == False:
+                for i in range(3):
+                    self.debug_print('connection wait...')
+                    time.sleep(5)
+                    if self.client.is_connected():
+                        break
+                if self.client.is_connected() == False:
+                    self.debug_print('connection failed')
+                    self.disconnect()
+                    return
             if type(topic) != str:
                 raise TypeError('"topic" type must be str!')
             elif len(topic) == 0:
