@@ -8,15 +8,20 @@ def on_connect(client, userdata, flags, rc):
     else:
             print('[on_connect] Connection Failed :', str(rc))
 
-@static_vars(retry_count=0)
 def on_disconnect(client, userdata, rc=0):
     if rc == 0:
         print('[on_disconnect] Disconnection OK')
         on_disconnect.retry_count = 0
     else:
         print('[on_disconnect] Disconnection Error, rc :', rc)
+        try:
+            if on_disconnect.retry_count == -1:
+                print('[on_disconnect] for checking variable')
+        except:
+            on_disconnect.retry_count = 0
         if on_disconnect.retry_count < 5:
             on_disconnect.retry_count += 1
+            print('[on_disconnect] Checking... (%d/%d)'%(on_disconnect.retry_count, 5))
         else:
             print('[on_disconnect] Disconnection Error, client loop stop')
             on_disconnect.retry_count = 0
