@@ -19,6 +19,7 @@ def on_disconnect(client, userdata, rc=0):
         if retry_count < 5:
             retry_count += 1
         else:
+            print('[on_disconnect] Disconnection Error, client loop stop')
             retry_count = 0
             client.loop_stop()
 
