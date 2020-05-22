@@ -1,12 +1,12 @@
 import time, json, ssl
 import paho.mqtt.client as mqtt
-import gc, platform
+import gc, platform, os
 
 def on_connect(client, userdata, flags, rc):
     if rc == 0:
-            print('[on_connect] Connection OK')
+        print('[on_connect] Connection OK')
     else:
-            print('[on_connect] Connection Failed :', str(rc))
+        print('[on_connect] Connection Failed :', str(rc))
 
 def on_disconnect(client, userdata, rc=0):
     if rc == 0:
@@ -43,38 +43,18 @@ def on_message(client, userdata, message):
     print('[on_message] qos =', message.qos)
     print('[on_message] retain =', message.retain)
 
-def debug_print(module, message):
-    if type(message) != str:
-        print('[debug_print] message type is wrong!')
-        return
-    print
-
-def convert_path_for_windows(path):
-    path_obj = path.split('/')
-    winpath = ''
-    if len(path_obj[0]) == 0:
-        path_obj = path_obj[1:]
-        winpath = path_obj[0] + ':\\'
-        path_obj = path_obj[1:]
-    winpath += '\\'.join(path_obj)
-    return winpath
-
 class MqttClient:
     def __init__(self, endpoint, port=1883, set_tls=False):
-        self.endpoint = endpoint
-        self.port = port #8883
-        self.ca_certs = './certs/ca_certs.crt'
-        self.certfile = './certs/certificate.pem.crt'
-        self.keyfile = './certs/private.pem.key'
-        if platform.system().lower() == 'windows':
-            self.ca_certs = convert_path_for_windows(self.ca_certs)
-            self.certfile = convert_path_for_windows(self.certfile)
-            self.keyfile = convert_path_for_windows(self.keyfile)
-        self.client = mqtt.Client()
+        self.__endpoint = endpoint
+        self.__port = port #8883
+        self.__ca_certs = os.path.abspath(os.path.dirname(__file__) + './certs/ca_certs.crt')
+        self.__certfile = os.path.abspath(os.path.dirname(__file__) + './certs/certificate.pem.crt')
+        self.__keyfile = os.path.abspath(os.path.dirname(__file__) + './certs/private.pem.key')
+        self.__client = mqtt.Client()
         self.reset()
 
     def debug_print(self, message):
-        prefix = '[%s]'%(MqttClient.__name__)
+        prefix = '[%s]'%(self.__class__.__name__)
         if type(message) != str:
             print(prefix, 'message type is wrong!')
             return
@@ -83,7 +63,65 @@ class MqttClient:
             return
         print(prefix, message)
 
-    def reset(self, set_tls=False, ca_certs=None, certfile=None, keyfile=None, tls_version=ssl.PROTOCOL_TLSv1_2):
+    @property
+    def endpoint(self):
+        return self.__endpoint
+    @endpoint.setter
+    def endpoint(self, endpoint):
+        if type(endpoint) != str:
+            raise TypeError('"endpoint" is not str!')
+        self.__endpoint = endpoint
+
+    @property
+    def port(self):
+        return self.__port
+    @port.setter
+    def port(self, port):
+        if type(port) != int:
+            raise TypeError('"port" is not int!')
+        self.__port = port
+
+    @property
+    def client(self):
+        return self.__client
+
+    @property
+    def ca_certs(self):
+        return self.__ca_certs
+    @ca_certs.setter
+    def ca_certs(self, ca_certs):
+        if type(ca_certs) != str:
+            self.debug_print('"ca_certs" is invalid path')
+            raise TypeError('"ca_certs" is invalid path')
+        if platform.system().lower() == 'windows' and ca_certs[0] == '~':
+            ca_certs = os.environ['USERPROFILE'] + ca_certs[1:]
+        self.__ca_certs = os.path.abspath(ca_certs)
+
+    @property
+    def certfile(self):
+        return self.__certfile
+    @certfile.setter
+    def certfile(self, certfile):
+        if type(certfile) != str:
+            self.debug_print('"certfile" is invalid path')
+            raise TypeError('"certfile" is invalid path')
+        if platform.system().lower() == 'windows' and certfile[0] == '~':
+            certfile = os.environ['USERPROFILE'] + certfile[1:]
+        self.__certfile = os.path.abspath(certfile)
+
+    @property
+    def keyfile(self):
+        return self.__keyfile
+    @keyfile.setter
+    def keyfile(self, keyfile):
+        if type(keyfile) != str:
+            self.debug_print('"keyfile" is invalid path')
+            raise TypeError('"keyfile" is invalid path')
+        if platform.system().lower() == 'windows' and keyfile[0] == '~':
+            keyfile = os.environ['USERPROFILE'] + keyfile[1:]
+        self.__keyfile = os.path.abspath(keyfile)
+
+    def reset(self, set_tls=False, tls_version=ssl.PROTOCOL_TLSv1_2):
         if self.client.is_connected():
             self.disconnect()
         self.client.reinitialise()
@@ -94,18 +132,6 @@ class MqttClient:
         self.client.on_subscribe = on_subscribe
         self.client.on_unsubscribe = on_unsubscribe
         if set_tls:
-            if ca_certs != None:
-                if type(ca_certs) != str:
-                    raise TypeError('"ca_certs" type must be str!')
-                self.ca_certs = ca_certs
-            if certfile != None:
-                if type(certfile) != str:
-                    raise TypeError('"certfile" type must be str!')
-                self.certfile = certfile
-            if keyfile != None:
-                if type(keyfile) != str:
-                    raise TypeError('"keyfile" type must be str!')
-                self.keyfile = keyfile
             self.client.tls_set(ca_certs = self.ca_certs,
                                 certfile = self.certfile,
                                 keyfile = self.keyfile,

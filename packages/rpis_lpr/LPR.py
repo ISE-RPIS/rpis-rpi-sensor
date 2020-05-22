@@ -1,13 +1,21 @@
 import cv2
 import numpy as np
 import pytesseract
+import platform
 
-def getLicensePlateChar(img_path):
+def getLicensePlateChar(image):
     # Read image
-    img_ori = cv2.imread(img_path)
+    img_ori = image
+    
+    if type(image) == str:
+        if platform.system().lower() == 'windows' and image[0] == '~':
+            image = os.environ['USERPROFILE'] + image[1:]
+        image = os.path.abspath(image)
+        img_ori = cv2.imread(image)
+    
     if type(img_ori) is not np.ndarray:
-        print('ERROR: image path is wrong!')
-        return 'error'
+        raise ValueError('ERROR: invalid image!')
+    
     height, width, channel = img_ori.shape
 
     # Convert image to grayscale
