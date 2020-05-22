@@ -162,7 +162,7 @@ class Camera:
             path += '/'
         #if platform.system().lower() == 'windows':
         #    path = convert_path_for_windows(path)
-        
+
         if type(img_name) != str:
             self.debug_print('"img_name" must be string!')
             raise TypeError('"img_name" must be string!')
@@ -197,7 +197,7 @@ class Camera:
             # saturation(채도) set
             # -100 ~ 100, default 0
             #camera.saturation = -100
-            
+
             # maximum resolution(해상도) is (2592,1944) for photo, (1920,1080) for video
             # minimum resolution is (64,64)
             # framerate must be 15 if use maximum resolution
@@ -321,5 +321,5 @@ class Camera:
             image = np.empty((self.resolution[1] * self.resolution[0] * 3,), dtype=np.uint8)
             camera.capture(iamge, 'bgr')
             image = image.reshape((self.resolution[1], self.resolution[0], 3))
-            
+
         return image

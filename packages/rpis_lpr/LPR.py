@@ -6,16 +6,16 @@ import platform
 def getLicensePlateChar(image):
     # Read image
     img_ori = image
-    
+
     if type(image) == str:
         if platform.system().lower() == 'windows' and image[0] == '~':
             image = os.environ['USERPROFILE'] + image[1:]
         image = os.path.abspath(image)
         img_ori = cv2.imread(image)
-    
+
     if type(img_ori) is not np.ndarray:
         raise ValueError('ERROR: invalid image!')
-    
+
     height, width, channel = img_ori.shape
 
     # Convert image to grayscale
@@ -179,21 +179,21 @@ def getLicensePlateChar(image):
         for d in sorted_chars:
             sum_height += d['h']
         plate_height = int(sum_height / len(sorted_chars) * PLATE_WIDTH_PADDING)
-        
+
         triangle_height = sorted_chars[-1]['cy'] - sorted_chars[0]['cy']
         triangle_hypotenus = np.linalg.norm(
             np.array((sorted_chars[0]['cx'], sorted_chars[0]['cy'])) - np.array((sorted_chars[-1]['cx'], sorted_chars[-1]['cy']))
         )
         angle = np.degrees(np.arcsin(triangle_height / triangle_hypotenus))
         rotation_matrix = cv2.getRotationMatrix2D(center=(plate_cx, plate_cy), angle=angle, scale=1.0)
-        
+
         img_rotated = cv2.warpAffine(img_thresh, M=rotation_matrix, dsize=(width, height))
         img_cropped = cv2.getRectSubPix(
             img_rotated,
             patchSize=(int(plate_width), int(plate_height)),
             center=(int(plate_cx), int(plate_cy))
         )
-        
+
         ratio = img_cropped.shape[1] / img_cropped.shape[0]
         if ratio < MIN_PLATE_RATIO or ratio > MAX_PLATE_RATIO:
             continue
