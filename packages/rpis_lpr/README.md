@@ -2,16 +2,29 @@
 ## Required
 - Python 3.7 recommended
 - OpenCV
-- Pytesseract
-- Numpy
+- pytesseract
+- numpy
 
-## How to use?
-If you give a path of image, finding and returing text of license plate.
+## Using libraries
+- cv2
+- numpy
+- pytesseract
+- platform
+
+## How to install ?
+Copy 'rpis_lpr' directory into 'site-packages' directory, below 'python/lib'.
+
+## How to use ?
 ```
-from LPR import LPR
+from rpis_lpr import LPR
 
+# 1. using path
 img_path = 'path/of/your/image'
 license_char = LPR.getLicensePlateChar(img_path)
+
+# 2. using numpy.ndarray
+img_ndarray # some img object like numpy.ndarray
+license_char = LPR.getLicensePlateChar(img_ndarray)
 
 print(license_char)
 # 12가3456
