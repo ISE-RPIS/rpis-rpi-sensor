@@ -4,13 +4,14 @@
 - paho_mqtt
 
 ## Using libraries
-- time, json, ssl, gc, platform
+- time, json, ssl
 - paho.mqtt.client
+- gc, platform, os
 
-## How to install?
+## How to install ?
 Copy 'rpis_mqtt' directory into 'site-packages' directory, below 'python/lib'.
 
-## How to use?
+## How to use ?
 ```
 from rpis_mqtt.mqtt import MqttClient
 import json
@@ -36,4 +37,9 @@ client.publish('my/topic', payload=payload)
 
 client.disconnect()
 # [on_disconnect] Disconnection OK, rc : 0
+
+# change endpoint, port and tls settings
+client.endpoint = 'other-host'
+client.port = 8883
+client.reset(set_tls=True)
 ```
