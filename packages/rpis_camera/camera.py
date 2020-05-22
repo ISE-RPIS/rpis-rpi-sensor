@@ -187,7 +187,7 @@ class Camera:
         #    path = os.environ['USERPROFILE'] + ('' if len(path) == 1 else path[1:])
         if platform.system().lower() == 'windows' and path[0] == '~':
             path = os.environ['USERPROFILE'] + path[1:]
-        save_path = os.path.abspath(path + img_name)
+        save_path = os.path.abspath(path + '/' + img_name)
 
         with PiCamera() as camera:
             # rotation set
@@ -281,7 +281,7 @@ class Camera:
             # format (jpge, png, gif, rgb, bgr, ...)
             # options : support only 'jpeg' (ex: 'quality 100')
             #camera.capture(path + im_name, im_format)
-            camera.capture(os.path.abspath(save_path))
+            camera.capture(save_path)
 
     def capture_to_opencv(self):
         iamge = None
