@@ -47,9 +47,9 @@ class MqttClient:
     def __init__(self, endpoint, port=1883, set_tls=False):
         self.__endpoint = endpoint
         self.__port = port #8883
-        self.__ca_certs = os.path.abspath(os.path.dirname(__file__) + './certs/ca_certs.crt')
-        self.__certfile = os.path.abspath(os.path.dirname(__file__) + './certs/certificate.pem.crt')
-        self.__keyfile = os.path.abspath(os.path.dirname(__file__) + './certs/private.pem.key')
+        self.__ca_certs = os.path.abspath(os.path.dirname(__file__) + '/' + './certs/ca_certs.crt')
+        self.__certfile = os.path.abspath(os.path.dirname(__file__) + '/' + './certs/certificate.pem.crt')
+        self.__keyfile = os.path.abspath(os.path.dirname(__file__) + '/' + './certs/private.pem.key')
         self.__client = mqtt.Client()
         self.reset()
 
