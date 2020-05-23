@@ -185,8 +185,14 @@ class Camera:
         #im_format = ('jpeg' if im_format == 'jpg' else im_format)
         #if platform.system().lower() == 'windows' and path[0] == '~':
         #    path = os.environ['USERPROFILE'] + ('' if len(path) == 1 else path[1:])
-        if platform.system().lower() == 'windows' and path[0] == '~':
-            path = os.environ['USERPROFILE'] + path[1:]
+
+        #if platform.system().lower() == 'windows' and path[0] == '~':
+        #    path = os.environ['USERPROFILE'] + path[1:]
+        if path[0] == '~':
+            if platform.system().lower() == 'windows':
+                path = os.environ['USERPROFILE'] + path[1:]
+            else:
+                path = os.environ['HOME'] + path[1:]
         save_path = os.path.abspath(path + '/' + img_name)
 
         with PiCamera() as camera:
