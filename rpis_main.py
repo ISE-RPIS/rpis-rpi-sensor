@@ -17,7 +17,7 @@ QUIT_BUTTON_PIN = 12
 GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(ULTRASOUNDS_TRIG, GPIO.OUT)
-GPIO.setup(ULTRASOUNDS_TRIG, GPIO.IN)
+GPIO.setup(ULTRASOUNDS_ECHO, GPIO.IN)
 
 try:
     while True:
