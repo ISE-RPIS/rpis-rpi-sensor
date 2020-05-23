@@ -29,7 +29,7 @@ try:
         sleep(0.00001)
         GPIO.output(ULTRASOUNDS_TRIG, False)
 
-        while GPIO.input(UTLRASOUNDS_ECHO) == 0:
+        while GPIO.input(ULTRASOUNDS_ECHO) == 0:
             pulse_start = time()
         while GPIO.input(ULTRASOUNDS_ECHO) == 1:
             pulse_end = time()
