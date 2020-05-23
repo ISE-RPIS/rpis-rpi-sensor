@@ -1,4 +1,5 @@
 from picamera import PiCamera
+from picamera.array import PiRGBArray
 from time import sleep
 import numpy as np
 import cv2
@@ -328,10 +329,14 @@ class Camera:
             camera.hflip = self.hflip
             camera.vflip = self.vflip
 
+            rawCapture = PiRGBArray(camera)
+
             sleep(2)
 
-            image = np.empty((camera.resolution[1] * camera.resolution[0] * 3,), dtype=np.uint8)
-            camera.capture(iamge, 'bgr')
-            image = image.reshape((camera.resolution[1], camera.resolution[0], 3))
+            #image = np.empty((camera.resolution[1] * camera.resolution[0] * 3,), dtype=np.uint8)
+            #camera.capture(iamge, 'bgr')
+            #image = image.reshape((camera.resolution[1], camera.resolution[0], 3))
+            camera.capture(rawCapture, 'bgr')
+            image = rawCapture.array
 
         return image
