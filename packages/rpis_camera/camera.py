@@ -324,8 +324,8 @@ class Camera:
 
             sleep(2)
 
-            image = np.empty((self.resolution[1] * self.resolution[0] * 3,), dtype=np.uint8)
+            image = np.empty((camera.resolution[1] * camera.resolution[0] * 3,), dtype=np.uint8)
             camera.capture(iamge, 'bgr')
-            image = image.reshape((self.resolution[1], self.resolution[0], 3))
+            image = image.reshape((camera.resolution[1], camera.resolution[0], 3))
 
         return image
