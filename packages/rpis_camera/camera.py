@@ -155,7 +155,7 @@ class Camera:
             raise ValueError('"path" is empty!')
         for w in path:
             if w.lower() < 'a' or w.lower() > 'z':
-                if '!@#$%^&*)(][}{><-=+_`~|\\?.,;:\'\"'.count(w):
+                if '!@#$%^&*)(][}{><-=+_`|?.,;:\'\"'.count(w):
                     self.debug_print('"path" is invalid')
                     raise ValueError('"path" is invalid')
         if path[-1] != '/':
@@ -171,7 +171,7 @@ class Camera:
             raise ValueError('"img_name" is empty!')
         for w in img_name:
             if w.lower() < 'a' or w.lower() > 'z':
-                if '!@#$%^&*)(][}{><-=+_`~|\\?,;:\'\"'.count(w):
+                if '!@#$%^&*)(][}{/><-=+_`~|\\?,;:\'\"'.count(w):
                     self.debug_print('"img_name" is invalid')
                     raise ValueError('"img_name" is invalid')
         if len(img_name.split('.')) < 2:
