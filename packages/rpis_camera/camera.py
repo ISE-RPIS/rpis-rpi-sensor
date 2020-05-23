@@ -143,6 +143,9 @@ class Camera:
         if sensor_mode < 0 or sensor_mode > 7:
             self.debug_print('"sensor_mode" is invalid (0~7) : {0}'.format(sensor_mode))
             raise ValueError('"sensor_mode" is invalid (0~7) : {0}'.format(sensor_mode))
+        if sensor_mode == 2 or sensor_mode == 3:
+            self.debug_print('"sensor_mode" 2, 3 is not supported')
+            raise ValueError('"sensor_mode" 2, 3 is not supported')
         self.__sensor_mode = sensor_mode
 
 
@@ -310,6 +313,9 @@ class Camera:
             '''
             if self.sensor_mode != 0:
                 camera.sensor_mode = self.sensor_mode
+                resolutions = {1: (1920,1080), 4: (1640,1232), 5: (1640,922),
+                               6: (1280,720), 7: (640,480)}
+                camera.resolution = resolutions[self.sensor_mode]
             else:
                 camera.resolution = self.resolution
                 if self.resolution == (2592, 1944):
