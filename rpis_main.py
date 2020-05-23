@@ -49,6 +49,7 @@ try:
             # checking 2 sec
             if obj_detect_end - obj_detect_start >= 2:
                 # TODO: Capture & Report to DB
+                a = 0
         else:
             obj_detect_start = -1
 finally:
