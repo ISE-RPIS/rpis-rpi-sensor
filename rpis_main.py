@@ -43,7 +43,7 @@ try:
         if distance <= 25:
             # checking per 50ms
             #sleep(0.05)
-            if obj_detect_start = -1:
+            if obj_detect_start == -1:
                 obj_detect_start = time()
             obj_detect_end = time()
             # checking 2 sec
