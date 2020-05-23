@@ -10,9 +10,9 @@ from time import sleep, time
 AWS_IOT_ENDPOINT = 'a3d767kqnxh4m3-ats.iot.ap-northeast-2.amazonaws.com'
 AWS_IOT_PORT = 8883
 
-ULTRASOUNDS_TRIG = 2
-ULTRASOUNDS_ECHO = 3
-QUIT_BUTTON_PIN = 10
+ULTRASOUNDS_TRIG = 5
+ULTRASOUNDS_ECHO = 6
+QUIT_BUTTON_PIN = 12
 
 GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BCM)
@@ -40,9 +40,9 @@ try:
 
         print('Distance :', distance, 'cm')
 
-        if distance >= 25:
+        if distance <= 25:
             # checking per 50ms
-            sleep(0.05)
+            #sleep(0.05)
             if obj_detect_start = -1:
                 obj_detect_start = time()
             obj_detect_end = time()
