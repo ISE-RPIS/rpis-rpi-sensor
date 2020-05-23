@@ -318,7 +318,7 @@ class Camera:
 
             camera.brightness = self.brightness
             camera.contrast = self.contrast
-            camera.rotation = self.rotaion
+            camera.rotation = self.rotation
             camera.hflip = self.hflip
             camera.vflip = self.vflip
 
