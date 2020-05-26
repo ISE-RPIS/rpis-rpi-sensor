@@ -49,8 +49,15 @@ try:
             # checking 2 sec
             if obj_detect_end - obj_detect_start >= 2:
                 # TODO: Capture & Report to DB
-                a = 0
+                print('Detected!!!')
         else:
             obj_detect_start = -1
 finally:
     GPIO.cleanup()
+
+# TODO: how to use sudo command?
+# making sh script
+# 버튼 두개 달아서 입력 체크 (start/stop)
+# LED 두 개 달아서, 현재 상태 체크 (노란색: 준비, 초록색: 실행중)
+# 준비 상태에서 start 버튼 누르면, 센서 동작 실행
+# 준비 상태에서 stop 버튼 누르면 시스템 종료
