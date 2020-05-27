@@ -16,7 +16,6 @@ Copy 'rpis_lpr' directory into 'site-packages' directory, below 'python/lib'.
 
 ## How to use ?
 ```
-from rpis_lpr import LPR
 from rpis_lpr.LPR import LPR
 
 # 0. Create LPR instance
