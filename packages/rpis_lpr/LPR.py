@@ -8,7 +8,7 @@ class LPR:
     def __init__(self):
         return
 
-    def get_license_plate_char(image):
+    def get_license_plate_char(self, image):
         # Read image
         img_ori = image
 
