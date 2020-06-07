@@ -8,9 +8,6 @@
 - paho.mqtt.client
 - gc, platform, os
 
-## How to install ?
-Copy 'rpis_mqtt' directory into 'site-packages' directory, below 'python/lib'.
-
 ## How to use ?
 ```
 from rpis_mqtt.mqtt import MqttClient
@@ -41,5 +38,6 @@ client.disconnect()
 # change endpoint, port and tls settings
 client.endpoint = 'other-host'
 client.port = 8883
-client.reset(set_tls=True)
+client.set_tls = True
+client.reset()
 ```
