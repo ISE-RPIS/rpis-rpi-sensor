@@ -6,20 +6,51 @@ import json, ssl, os, platform, gc
 import RPi.GPIO as GPIO
 from time import sleep, time
 
-AWS_IOT_ENDPOINT = 'a3d767kqnxh4m3-ats.iot.ap-northeast-2.amazonaws.com'
-AWS_IOT_PORT = 8883
+ULTRASOUNDS_TRIG = -1
+ULTRASOUNDS_ECHO = -1
+QUIT_BUTTON_PIN = -1
+PARKING_ID = -1
+MODE = -1
 
-ULTRASOUNDS_TRIG = 5
-ULTRASOUNDS_ECHO = 6
-QUIT_BUTTON_PIN = 24
+print('[RPIS] Setting properties')
 
 while True:
-    PARKING_ID = input('[RPIS] Set "parking_id": ')
+    ULTRASOUNDS_TRIG = input('[RPIS] Set ultra-sounds sensor, TRIG pin : ')
+    try:
+        ULTRASOUNDS_TRIG = int(ULTRASOUNDS_TRIG)
+    except:
+        print('[RPIS] Occured exception! : Failed type casting "trig"')
+        continue
+    if input('[RPIS] "{0}" is correct? (y/n) : '.format(ULTRASOUNDS_TRIG)).lower() == 'y':
+        break
+
+while True:
+    ULTRASOUNDS_ECHO = input('[RPIS] Set ultra-sounds sensor, ECHO pin : ')
+    try:
+        ULTRASOUNDS_ECHO = int(ULTRASOUNDS_ECHO)
+    except:
+        print('[RPIS] Occured exception! : Failed type casting "echo"')
+        continue
+    if input('[RPIS] "{0}" is correct? (y/n) : '.format(ULTRASOUNDS_ECHO)).lower() == 'y':
+        break
+
+while True:
+    QUIT_BUTTON_PIN = input('[RPIS] Set button pin : ')
+    try:
+        QUIT_BUTTON_PIN = int(QUIT_BUTTON_PIN)
+    except:
+        print('[RPIS] Occured exception! : Failed type casting "btn"')
+        continue
+    if input('[RPIS] "{0}" is correct? (y/n) : '.format(QUIT_BUTTON_PIN)).lower() == 'y':
+        break
+
+while True:
+    PARKING_ID = input('[RPIS] Set "parking_id" : ')
     if input('[RPIS] "{0}" Is correct? (y/n) : '.format(PARKING_ID)).lower() == 'y':
         break
 
 while True:
-    MODE = input('[RPIS] Set mode (0: coming, 1: outgoing): ')
+    MODE = input('[RPIS] Set mode (0: coming, 1: outgoing) : ')
     try:
         MODE = int(MODE)
     except:
@@ -31,7 +62,11 @@ while True:
     if input('[RPIS] "{0}" is correct? (y/n) : '.format(MODE)).lower() == 'y':
         break
 
+
 print('[RPIS] Activate RPIS main process...')
+
+AWS_IOT_ENDPOINT = 'a3d767kqnxh4m3-ats.iot.ap-northeast-2.amazonaws.com'
+AWS_IOT_PORT = 8883
 
 GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BCM)
@@ -42,6 +77,7 @@ GPIO.setup(QUIT_BUTTON_PIN, GPIO.IN, GPIO.PUD_UP)
 try:
     while True:
         if GPIO.input(QUIT_BUTTON_PIN) == False:
+            print('[RPIS] Quit button pressed!')
             break
 
         # Loop time: 500ms + @
@@ -60,7 +96,7 @@ try:
         distance = pulse_duration * 34000 / 2
         distance = round(distance, 2)
 
-        print('[RPIS] Distance :', distance, 'cm')
+        #print('[RPIS] Distance :', distance, 'cm')
 
         if distance <= 25:
             if obj_detect_start == -1:
@@ -95,6 +131,7 @@ try:
                     client.publish('iot/rpis/outgoing', json.dumps(data))
                 print('[RPIS] 4. Sending data is successfully!')
                 print(json.dumps(data, indent=4))
+                gc.collect()
         else:
             obj_detect_start = -1
 except:
