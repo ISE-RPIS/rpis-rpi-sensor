@@ -51,6 +51,7 @@ class MqttClient:
         self.__certfile = os.path.abspath(os.path.dirname(__file__) + '/' + './certs/certificate.pem.crt')
         self.__keyfile = os.path.abspath(os.path.dirname(__file__) + '/' + './certs/private.pem.key')
         self.__client = mqtt.Client()
+        self.__set_tls = set_tls
         self.reset()
 
     def debug_print(self, message):
@@ -121,7 +122,17 @@ class MqttClient:
             keyfile = os.environ['USERPROFILE'] + keyfile[1:]
         self.__keyfile = os.path.abspath(keyfile)
 
-    def reset(self, set_tls=False, tls_version=ssl.PROTOCOL_TLSv1_2):
+    @property
+    def set_tls(self):
+        return self.__set_tls
+    @set_tls.setter
+    def set_tls(self, set_tls):
+        if type(set_tls) != bool:
+            self.debug_print('"set_tls" is not bool!')
+            raise TypeError('"set_tls" is not bool!')
+        self.__set_tls = set_tls
+
+    def reset(self):
         if self.client.is_connected():
             self.disconnect()
         self.client.reinitialise()
@@ -131,11 +142,11 @@ class MqttClient:
         self.client.on_message = on_message
         self.client.on_subscribe = on_subscribe
         self.client.on_unsubscribe = on_unsubscribe
-        if set_tls:
+        if self.set_tls:
             self.client.tls_set(ca_certs = self.ca_certs,
                                 certfile = self.certfile,
                                 keyfile = self.keyfile,
-                                tls_version = tls_version)
+                                tls_version = ssl.PROTOCOL_TLSv1_2)
         gc.collect()
 
     def connect(self):
