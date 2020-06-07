@@ -14,3 +14,8 @@ RPIS에 사용되는 R-Pi 센서를 위한 소스코드 입니다.
 업데이트 필요
 - Python 3.7 이상 설치
 - 패키지 사용을 위한 라이브러리 설치 (각 패키지 설명 참고)
+
+## Package 가이드
+- [Camera](https://github.com/ISE-RPIS/rpis-rpi-sensor/tree/master/packages/rpis_camera)
+- [LPR](https://github.com/ISE-RPIS/rpis-rpi-sensor/tree/master/packages/rpis_lpr)
+- [MqttClient](https://github.com/ISE-RPIS/rpis-rpi-sensor/tree/master/packages/rpis_mqtt)
