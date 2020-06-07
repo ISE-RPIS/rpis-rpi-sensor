@@ -1,4 +1,4 @@
-# License Plate Recognition (LPR)
+# License Plate Recognition (LPR) for RPIS
 ## Required
 - Python 3.7 recommended
 - OpenCV
@@ -11,24 +11,18 @@
 - pytesseract
 - platform
 
-## How to install ?
-Copy 'rpis_lpr' directory into 'site-packages' directory, below 'python/lib'.
-
 ## How to use ?
 ```
 from rpis_lpr.LPR import LPR
 
-# 0. Create LPR instance
-lpr = LPR()
-
 # 1. using path
 img_path = 'path/of/your/image'
-license_char = LPR.get_license_plate_char(img_path)
+license_char = LPR().get_license_plate_char(img_path)
 
 
 # 2. using numpy.ndarray
-img_ndarray # some img object like numpy.ndarray
-license_char = LPR.get_license_plate_char(img_ndarray)
+img_ndarray # some img object like numpy.ndarray type
+license_char = LPR().get_license_plate_char(img_ndarray)
 
 
 print(license_char)
