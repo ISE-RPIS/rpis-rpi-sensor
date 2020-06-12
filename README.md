@@ -23,6 +23,8 @@ RPIS에 사용되는 R-Pi 센서를 위한 소스코드 입니다.
 [RPIS] "5" is correct? (y/n) : y
 [RPIS] Set ultra-sounds sensor, ECHO pin : 6
 [RPIS] "6" is correct? (y/n) : y
+[RPIS] Set ultra-sounds sensor, distance : 25
+[RPIS] "25" is correct? (y/n) : y
 [RPIS] Set button pin : 24
 [RPIS] "24" is correct? (y/n) : y
 [RPIS] Set "parking_id" : 123456
