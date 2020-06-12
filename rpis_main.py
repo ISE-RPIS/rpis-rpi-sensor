@@ -8,6 +8,7 @@ from time import sleep, time
 
 ULTRASOUNDS_TRIG = -1
 ULTRASOUNDS_ECHO = -1
+ULTRASOUNDS_DISTANCE = -1
 QUIT_BUTTON_PIN = -1
 PARKING_ID = -1
 MODE = -1
@@ -32,6 +33,16 @@ while True:
         print('[RPIS] Occured exception! : Failed type casting "echo"')
         continue
     if input('[RPIS] "{0}" is correct? (y/n) : '.format(ULTRASOUNDS_ECHO)).lower() == 'y':
+        break
+
+while True:
+    ULTRASOUNDS_DISTANCE = input('[RPIS] Set ultra-sounds sensor, distance : ')
+    try:
+        ULTRASOUNDS_DISTANCE = int(ULTRASOUNDS_DISTANCE)
+    except:
+        print('[RPIS] Occured exception! : Failed type casting "distance"')
+        continue
+    if input('[RPIS] "{0}" is correct? (y/n) : '.format(ULTRASOUNDS_DISTANCE)).lower() == 'y':
         break
 
 while True:
@@ -98,7 +109,7 @@ try:
 
         #print('[RPIS] Distance :', distance, 'cm')
 
-        if distance <= 25:
+        if distance <= ULTRASOUNDS_DISTANCE:
             if obj_detect_start == -1:
                 obj_detect_start = time()
             obj_detect_end = time()
