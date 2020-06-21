@@ -6,74 +6,18 @@ import json, ssl, os, platform, gc
 import RPi.GPIO as GPIO
 from time import sleep, time
 
-ULTRASOUNDS_TRIG = -1
-ULTRASOUNDS_ECHO = -1
-ULTRASOUNDS_DISTANCE = -1
-QUIT_BUTTON_PIN = -1
-PARKING_ID = -1
+ULTRASOUNDS_TRIG = 20
+ULTRASOUNDS_ECHO = 21
+ULTRASOUNDS_DISTANCE = 11
+QUIT_BUTTON_PIN = 19
+# PARKING_ID = -1
 MODE = -1
-LED1_PIN = -1
-LED2_PIN = -1
-LED3_PIN = -1
-LED4_PIN = -1
+LED1_PIN = 26
+# LED2_PIN = -1
+# LED3_PIN = -1
+# LED4_PIN = -1
 
 print('[RPIS] Setting properties')
-
-while True:
-    ULTRASOUNDS_TRIG = input('[RPIS] Set ultra-sounds sensor, TRIG pin : ')
-    try:
-        ULTRASOUNDS_TRIG = int(ULTRASOUNDS_TRIG)
-    except:
-        print('[RPIS] Occured exception! : Failed type casting "trig"')
-        continue
-    if input('[RPIS] "{0}" is correct? (y/n) : '.format(ULTRASOUNDS_TRIG)).lower() == 'y':
-        break
-
-while True:
-    ULTRASOUNDS_ECHO = input('[RPIS] Set ultra-sounds sensor, ECHO pin : ')
-    try:
-        ULTRASOUNDS_ECHO = int(ULTRASOUNDS_ECHO)
-    except:
-        print('[RPIS] Occured exception! : Failed type casting "echo"')
-        continue
-    if input('[RPIS] "{0}" is correct? (y/n) : '.format(ULTRASOUNDS_ECHO)).lower() == 'y':
-        break
-
-while True:
-    ULTRASOUNDS_DISTANCE = input('[RPIS] Set ultra-sounds sensor, distance : ')
-    try:
-        ULTRASOUNDS_DISTANCE = int(ULTRASOUNDS_DISTANCE)
-    except:
-        print('[RPIS] Occured exception! : Failed type casting "distance"')
-        continue
-    if input('[RPIS] "{0}" is correct? (y/n) : '.format(ULTRASOUNDS_DISTANCE)).lower() == 'y':
-        break
-
-while True:
-    QUIT_BUTTON_PIN = input('[RPIS] Set button pin : ')
-    try:
-        QUIT_BUTTON_PIN = int(QUIT_BUTTON_PIN)
-    except:
-        print('[RPIS] Occured exception! : Failed type casting "btn"')
-        continue
-    if input('[RPIS] "{0}" is correct? (y/n) : '.format(QUIT_BUTTON_PIN)).lower() == 'y':
-        break
-
-while True:
-    LED1_PIN = input('[RPIS] Set LED-1 pin : ')
-    # LED2_PIN = input('[RPIS] Set LED-2 pin : ')
-    # LED3_PIN = input('[RPIS] Set LED-3 pin : ')
-    # LED4_PIN = input('[RPIS] Set LED-4 pin : ')
-    try:
-        LED1_PIN = int(LED1_PIN)
-        # LED2_PIN = int(LED2_PIN)
-        # LED3_PIN = int(LED3_PIN)
-        # LED4_PIN = int(LED4_PIN)
-    except:
-        print('[RPIS] Occured exception! : Failed type casting "LED PIN"')
-        continue
-    if input('[RPIS] "{}, {}, {}, {}" is correct? (y/n) : '.format(LED1_PIN, LED2_PIN, LED3_PIN, LED4_PIN)).lower() == 'y':
-        break
 
 while True:
     MODE = input('[RPIS] Set mode (0: coming, 1: outgoing) : ')
@@ -131,7 +75,7 @@ try:
         distance = pulse_duration * 34000 / 2
         distance = round(distance, 2)
 
-        # print('[RPIS] Distance :', distance, 'cm')
+        print('[RPIS] Distance :', distance, 'cm')
 
         if distance <= ULTRASOUNDS_DISTANCE:
             if obj_detect_start == -1:
