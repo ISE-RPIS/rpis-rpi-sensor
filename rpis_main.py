@@ -23,8 +23,9 @@ while True:
     ULTRASOUNDS_TRIG = input('[RPIS] Set ultra-sounds sensor, TRIG pin : ')
     try:
         ULTRASOUNDS_TRIG = int(ULTRASOUNDS_TRIG)
-    except:
+    except Exception as e:
         print('[RPIS] Occured exception! : Failed type casting "trig"')
+        print(e)
         continue
     if input('[RPIS] "{0}" is correct? (y/n) : '.format(ULTRASOUNDS_TRIG)).lower() == 'y':
         break
@@ -33,8 +34,9 @@ while True:
     ULTRASOUNDS_ECHO = input('[RPIS] Set ultra-sounds sensor, ECHO pin : ')
     try:
         ULTRASOUNDS_ECHO = int(ULTRASOUNDS_ECHO)
-    except:
+    except Exception as e:
         print('[RPIS] Occured exception! : Failed type casting "echo"')
+        print(e)
         continue
     if input('[RPIS] "{0}" is correct? (y/n) : '.format(ULTRASOUNDS_ECHO)).lower() == 'y':
         break
@@ -43,8 +45,9 @@ while True:
     ULTRASOUNDS_DISTANCE = input('[RPIS] Set ultra-sounds sensor, distance : ')
     try:
         ULTRASOUNDS_DISTANCE = int(ULTRASOUNDS_DISTANCE)
-    except:
+    except Exception as e:
         print('[RPIS] Occured exception! : Failed type casting "distance"')
+        print(e)
         continue
     if input('[RPIS] "{0}" is correct? (y/n) : '.format(ULTRASOUNDS_DISTANCE)).lower() == 'y':
         break
@@ -53,8 +56,9 @@ while True:
     QUIT_BUTTON_PIN = input('[RPIS] Set button pin : ')
     try:
         QUIT_BUTTON_PIN = int(QUIT_BUTTON_PIN)
-    except:
+    except Exception as e:
         print('[RPIS] Occured exception! : Failed type casting "btn"')
+        print(e)
         continue
     if input('[RPIS] "{0}" is correct? (y/n) : '.format(QUIT_BUTTON_PIN)).lower() == 'y':
         break
@@ -69,8 +73,9 @@ while True:
         LED2_PIN = int(LED2_PIN)
         LED3_PIN = int(LED3_PIN)
         LED4_PIN = int(LED4_PIN)
-    except:
+    except Exception as e:
         print('[RPIS] Occured exception! : Failed type casting "LED PIN"')
+        print(e)
         continue
     if input('[RPIS] "{}, {}, {}, {}" is correct? (y/n) : '.format(LED1_PIN, LED2_PIN, LED3_PIN, LED4_PIN)).lower() == 'y':
         break
@@ -84,8 +89,9 @@ while True:
     MODE = input('[RPIS] Set mode (0: coming, 1: outgoing) : ')
     try:
         MODE = int(MODE)
-    except:
+    except Exception as e:
         print('[RPIS] Occured exception! : Failed type casting "MODE"')
+        print(e)
         continue
     if MODE < 0 or MODE > 1:
         print('[RPIS] Error: Invalid value!')
@@ -117,6 +123,17 @@ GPIO.setup(LED4_PIN, GPIO.OUT)
 GPIO.add_event_detect(QUIT_BUTTON_PIN, GPIO.FALLING, buttonOnClick)
 
 obj_detect_start = -1
+obj_detected = False
+
+cam = Camera()
+cam.sensor_mode = 6
+cam.rotation = 180
+cam.contrast = 70
+cam.saturation = -100
+cam.exposure_mode = 'sports'
+lpr = LPR()
+client = MqttClient(endpoint=AWS_IOT_ENDPOINT,
+                    port=AWS_IOT_PORT, set_tls=True)
 
 try:
     GPIO.output(LED1_PIN, True)
@@ -137,26 +154,29 @@ try:
         distance = pulse_duration * 34000 / 2
         distance = round(distance, 2)
 
-        # print('[RPIS] Distance :', distance, 'cm')
+        print('[RPIS] Distance :', distance, 'cm')
 
         if distance <= ULTRASOUNDS_DISTANCE:
+            if obj_detected:
+                continue
             if obj_detect_start == -1:
                 obj_detect_start = time()
             obj_detect_end = time()
             # checking 2 sec
             if obj_detect_end - obj_detect_start >= 2:
+                obj_detected = True
                 print('[RPIS] 1. Detected!!!')
                 GPIO.output(LED2_PIN, True)
                 # Capture
-                cam = Camera()
-                cam.sensor_mode = 6
-                cam.rotation = 180
                 image = cam.capture_to_opencv()
 
                 print('[RPIS] 2. Capturing image is successfully!')
                 GPIO.output(LED3_PIN, True)
                 # Get license text
-                plate_char = LPR().get_license_plate_char(image)
+                plate_char = lpr.get_license_plate_char(image)
+                if plate_char is None:
+                    print('[RPIS] Cannot find plate char...')
+                    continue
                 print('[RPIS] 3. Getting license text is successfully!')
                 print('[RPIS] license : {0}'.format(plate_char))
 
@@ -169,25 +189,26 @@ try:
                     data['coming_time'] = str(time())
                 else:
                     data['outgoing_time'] = str(time())
-                client = MqttClient(endpoint=AWS_IOT_ENDPOINT,
-                                    port=AWS_IOT_PORT, set_tls=True)
+
                 client.connect()
                 if MODE == 0:
                     client.publish('iot/rpis/coming', json.dumps(data))
                 else:
                     client.publish('iot/rpis/outgoing', json.dumps(data))
+                client.disconnect()
                 print('[RPIS] 4. Sending data is successfully!')
                 print(json.dumps(data, indent=4))
                 gc.collect()
         else:
             obj_detect_start = -1
+            obj_detected = False
             GPIO.output(LED2_PIN, False)
             GPIO.output(LED3_PIN, False)
             GPIO.output(LED4_PIN, False)
-except:
+except Exception as e:
     print('[RPIS] Error: Occured exception!!!')
+    print(e)
 finally:
-    GPIO.output(LED1_PIN, False)
     GPIO.cleanup()
     print('[RPIS] GPIO cleanup successfully!')
 

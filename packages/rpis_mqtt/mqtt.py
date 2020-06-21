@@ -1,12 +1,18 @@
-import time, json, ssl
+import time
+# import json
+import ssl
 import paho.mqtt.client as mqtt
-import gc, platform, os
+import gc
+import platform
+import os
+
 
 def on_connect(client, userdata, flags, rc):
     if rc == 0:
         print('[on_connect] Connection OK')
     else:
         print('[on_connect] Connection Failed :', str(rc))
+
 
 def on_disconnect(client, userdata, rc=0):
     if rc == 0:
@@ -17,24 +23,30 @@ def on_disconnect(client, userdata, rc=0):
         try:
             if on_disconnect.retry_count == -1:
                 print('[on_disconnect] for checking variable')
-        except:
+        except Exception as e:
             on_disconnect.retry_count = 0
+            print(e)
         if on_disconnect.retry_count < 5:
             on_disconnect.retry_count += 1
-            print('[on_disconnect] Checking... (%d/%d)'%(on_disconnect.retry_count, 5))
+            print('[on_disconnect] Checking... (%d/%d)' %
+                  (on_disconnect.retry_count, 5))
         else:
             print('[on_disconnect] Disconnection Error, client loop stop')
             on_disconnect.retry_count = 0
             client.loop_stop()
 
+
 def on_publish(client, userdata, mid):
     print('[on_publish] callback mid =', mid)
+
 
 def on_subscribe(client, userdata, mid, granted_qos, properties=None):
     print('[on_subscribe] callback mid =', mid)
 
+
 def on_unsubscribe(client, userdata, mid):
     print('[on_unsubscribe] callback mid =', mid)
+
 
 def on_message(client, userdata, message):
     print('[on_message] mid =', message.mid)
@@ -43,19 +55,23 @@ def on_message(client, userdata, message):
     print('[on_message] qos =', message.qos)
     print('[on_message] retain =', message.retain)
 
+
 class MqttClient:
     def __init__(self, endpoint, port=1883, set_tls=False):
         self.__endpoint = endpoint
-        self.__port = port #8883
-        self.__ca_certs = os.path.abspath(os.path.dirname(__file__) + '/' + './certs/ca_certs.crt')
-        self.__certfile = os.path.abspath(os.path.dirname(__file__) + '/' + './certs/certificate.pem.crt')
-        self.__keyfile = os.path.abspath(os.path.dirname(__file__) + '/' + './certs/private.pem.key')
+        self.__port = port  # 8883
+        self.__ca_certs = os.path.abspath(os.path.dirname(
+            __file__) + '/' + './certs/ca_certs.crt')
+        self.__certfile = os.path.abspath(os.path.dirname(
+            __file__) + '/' + './certs/certificate.pem.crt')
+        self.__keyfile = os.path.abspath(os.path.dirname(
+            __file__) + '/' + './certs/private.pem.key')
         self.__client = mqtt.Client()
         self.__set_tls = set_tls
         self.reset()
 
     def debug_print(self, message):
-        prefix = '[%s]'%(self.__class__.__name__)
+        prefix = '[%s]' % (self.__class__.__name__)
         if type(message) != str:
             print(prefix, 'message type is wrong!')
             return
@@ -67,6 +83,7 @@ class MqttClient:
     @property
     def endpoint(self):
         return self.__endpoint
+
     @endpoint.setter
     def endpoint(self, endpoint):
         if type(endpoint) != str:
@@ -76,6 +93,7 @@ class MqttClient:
     @property
     def port(self):
         return self.__port
+
     @port.setter
     def port(self, port):
         if type(port) != int:
@@ -89,6 +107,7 @@ class MqttClient:
     @property
     def ca_certs(self):
         return self.__ca_certs
+
     @ca_certs.setter
     def ca_certs(self, ca_certs):
         if type(ca_certs) != str:
@@ -101,6 +120,7 @@ class MqttClient:
     @property
     def certfile(self):
         return self.__certfile
+
     @certfile.setter
     def certfile(self, certfile):
         if type(certfile) != str:
@@ -113,6 +133,7 @@ class MqttClient:
     @property
     def keyfile(self):
         return self.__keyfile
+
     @keyfile.setter
     def keyfile(self, keyfile):
         if type(keyfile) != str:
@@ -125,6 +146,7 @@ class MqttClient:
     @property
     def set_tls(self):
         return self.__set_tls
+
     @set_tls.setter
     def set_tls(self, set_tls):
         if type(set_tls) != bool:
@@ -143,10 +165,10 @@ class MqttClient:
         self.client.on_subscribe = on_subscribe
         self.client.on_unsubscribe = on_unsubscribe
         if self.set_tls:
-            self.client.tls_set(ca_certs = self.ca_certs,
-                                certfile = self.certfile,
-                                keyfile = self.keyfile,
-                                tls_version = ssl.PROTOCOL_TLSv1_2)
+            self.client.tls_set(ca_certs=self.ca_certs,
+                                certfile=self.certfile,
+                                keyfile=self.keyfile,
+                                tls_version=ssl.PROTOCOL_TLSv1_2)
         gc.collect()
 
     def connect(self):
@@ -173,13 +195,13 @@ class MqttClient:
 
     def publish(self, topic, payload, qos=0, retain=False):
         try:
-            if self.client.is_connected() == False:
+            if not self.client.is_connected():
                 for i in range(3):
                     self.debug_print('connection wait...')
                     time.sleep(5)
                     if self.client.is_connected():
                         break
-                if self.client.is_connected() == False:
+                if not self.client.is_connected():
                     self.debug_print('connection failed')
                     self.disconnect()
                     return
@@ -199,20 +221,21 @@ class MqttClient:
                 raise TypeError('"retain" type must be bool!')
             self.debug_print('message sending...')
             time.sleep(0.2)
-            _ = self.client.publish(topic, payload=payload, qos=qos, retain=retain)
+            _ = self.client.publish(
+                topic, payload=payload, qos=qos, retain=retain)
             time.sleep(0.2)
         except NameError:
             raise NameError('"client" is not defined. check client setup.')
 
     def subscribe(self, topic, qos=0, options=None, properties=None):
         try:
-            if self.client.is_connected() == False:
+            if not self.client.is_connected():
                 for i in range(3):
                     self.debug_print('connection wait...')
                     time.sleep(5)
                     if self.client.is_connected():
                         break
-                if self.client.is_connected() == False:
+                if not self.client.is_connected():
                     self.debug_print('connection failed')
                     self.disconnect()
                     return
@@ -226,8 +249,8 @@ class MqttClient:
                 raise ValueError('"qos" is wrong! (range: 0~2)')
             # TODO: type & value check of 'options', 'properties'
             time.sleep(0.2)
-            _ = self.client.subscribe(topic, qos=qos, options=options, properties=properties)
+            _ = self.client.subscribe(
+                topic, qos=qos, options=options, properties=properties)
             time.sleep(0.2)
         except NameError:
             raise NameError('"client" is not defined. check client setup.')
-
