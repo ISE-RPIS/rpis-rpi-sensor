@@ -1,6 +1,6 @@
-from rpis_mqtt.mqtt import MqttClient
-from rpis_camera.camera import Camera
-from rpis_lpr import LPR
+from packages.rpis_mqtt.mqtt import MqttClient
+from packages.rpis_camera.camera import Camera
+from packages.rpis_lpr.LPR import LPR
 import numpy as np
 import json, ssl, os, platform, gc
 import RPi.GPIO as GPIO
