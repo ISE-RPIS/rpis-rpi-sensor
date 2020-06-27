@@ -6,31 +6,16 @@ import json, ssl, os, platform, gc
 import RPi.GPIO as GPIO
 from time import sleep, time
 
-ULTRASOUNDS_TRIG = 20
-ULTRASOUNDS_ECHO = 21
-ULTRASOUNDS_DISTANCE = 11
-QUIT_BUTTON_PIN = 19
-# PARKING_ID = -1
-MODE = -1
-LED1_PIN = 26
-# LED2_PIN = -1
-# LED3_PIN = -1
-# LED4_PIN = -1
-
-print('[RPIS] Setting properties')
-
-while True:
-    MODE = input('[RPIS] Set mode (0: coming, 1: outgoing) : ')
-    try:
-        MODE = int(MODE)
-    except:
-        print('[RPIS] Occured exception! : Failed type casting "MODE"')
-        continue
-    if MODE < 0 or MODE > 1:
-        print('[RPIS] Error: Invalid value!')
-        continue
-    if input('[RPIS] "{0}" is correct? (y/n) : '.format(MODE)).lower() == 'y':
-        break
+ULTRASOUNDS_TRIG = -1
+ULTRASOUNDS_ECHO = -1
+ULTRASOUNDS_DISTANCE = 7
+QUIT_BUTTON_PIN = -1
+PARKING_ID = 000000
+MODE = 0
+LED1_PIN = -1
+LED2_PIN = -1
+LED3_PIN = -1
+LED4_PIN = -1
 
 print('[RPIS] Activate RPIS main process...')
 
@@ -49,12 +34,13 @@ GPIO.setup(ULTRASOUNDS_TRIG, GPIO.OUT)
 GPIO.setup(ULTRASOUNDS_ECHO, GPIO.IN)
 GPIO.setup(QUIT_BUTTON_PIN, GPIO.IN, GPIO.PUD_UP)
 GPIO.setup(LED1_PIN, GPIO.OUT)
-# GPIO.setup(LED2_PIN, GPIO.OUT)
-# GPIO.setup(LED3_PIN, GPIO.OUT)
-# GPIO.setup(LED4_PIN, GPIO.OUT)
+GPIO.setup(LED2_PIN, GPIO.OUT)
+GPIO.setup(LED3_PIN, GPIO.OUT)
+GPIO.setup(LED4_PIN, GPIO.OUT)
 GPIO.add_event_detect(QUIT_BUTTON_PIN, GPIO.FALLING, buttonOnClick)
 
 obj_detect_start = -1
+obj_detected = False
 
 try:
     GPIO.output(LED1_PIN, True)
@@ -78,27 +64,30 @@ try:
         print('[RPIS] Distance :', distance, 'cm')
 
         if distance <= ULTRASOUNDS_DISTANCE:
+            if obj_detected:
+                continue
             if obj_detect_start == -1:
                 obj_detect_start = time()
             obj_detect_end = time()
             # checking 2 sec
             if obj_detect_end - obj_detect_start >= 2:
                 print('[RPIS] 1. Detected!!!')
-                # GPIO.output(LED2_PIN, True)
+                obj_detected = True
+
                 # Capture
                 cam = Camera()
                 cam.sensor_mode = 6
                 cam.rotation = 180
                 image = cam.capture_to_opencv()
-
+                GPIO.output(LED2_PIN, True)
                 print('[RPIS] 2. Capturing image is successfully!')
-                # GPIO.output(LED3_PIN, True)
+
                 # Get license text
                 plate_char = LPR().get_license_plate_char(image)
+                GPIO.output(LED3_PIN, True)
                 print('[RPIS] 3. Getting license text is successfully!')
                 print('[RPIS] license : {0}'.format(plate_char))
 
-                # GPIO.output(LED4_PIN, True)
                 # Send to AWS IoT using MQTT
                 data = {}
                 data['license'] = plate_char
@@ -114,18 +103,20 @@ try:
                 #     client.publish('iot/rpis/coming', json.dumps(data))
                 # else:
                 #     client.publish('iot/rpis/outgoing', json.dumps(data))
+                GPIO.output(LED4_PIN, True)
                 print('[RPIS] 4. Sending data is successfully!')
                 print(json.dumps(data, indent=4))
                 gc.collect()
         else:
+            obj_detected = False
             obj_detect_start = -1
-            # GPIO.output(LED2_PIN, False)
-            # GPIO.output(LED3_PIN, False)
-            # GPIO.output(LED4_PIN, False)
-except:
+            GPIO.output(LED2_PIN, False)
+            GPIO.output(LED3_PIN, False)
+            GPIO.output(LED4_PIN, False)
+except Exception as e:
     print('[RPIS] Error: Occured exception!!!')
+    print(e)
 finally:
-    GPIO.output(LED1_PIN, False)
     GPIO.cleanup()
     print('[RPIS] GPIO cleanup successfully!')
 

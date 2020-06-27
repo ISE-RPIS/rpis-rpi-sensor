@@ -166,21 +166,22 @@ try:
             if obj_detect_end - obj_detect_start >= 2:
                 obj_detected = True
                 print('[RPIS] 1. Detected!!!')
-                GPIO.output(LED2_PIN, True)
+                obj_detected = True
+
                 # Capture
                 image = cam.capture_to_opencv()
-
+                GPIO.output(LED2_PIN, True)
                 print('[RPIS] 2. Capturing image is successfully!')
-                GPIO.output(LED3_PIN, True)
+
                 # Get license text
                 plate_char = lpr.get_license_plate_char(image)
                 if plate_char is None:
                     print('[RPIS] Cannot find plate char...')
                     continue
+                GPIO.output(LED3_PIN, True)
                 print('[RPIS] 3. Getting license text is successfully!')
                 print('[RPIS] license : {0}'.format(plate_char))
 
-                GPIO.output(LED4_PIN, True)
                 # Send to AWS IoT using MQTT
                 data = {}
                 data['license'] = plate_char
@@ -196,12 +197,13 @@ try:
                 else:
                     client.publish('iot/rpis/outgoing', json.dumps(data))
                 client.disconnect()
+                GPIO.output(LED4_PIN, True)
                 print('[RPIS] 4. Sending data is successfully!')
                 print(json.dumps(data, indent=4))
                 gc.collect()
         else:
-            obj_detect_start = -1
             obj_detected = False
+            obj_detect_start = -1
             GPIO.output(LED2_PIN, False)
             GPIO.output(LED3_PIN, False)
             GPIO.output(LED4_PIN, False)
