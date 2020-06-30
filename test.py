@@ -6,16 +6,16 @@ import json, ssl, os, platform, gc
 import RPi.GPIO as GPIO
 from time import sleep, time
 
-ULTRASOUNDS_TRIG = -1
-ULTRASOUNDS_ECHO = -1
+ULTRASOUNDS_TRIG = 24
+ULTRASOUNDS_ECHO = 23
 ULTRASOUNDS_DISTANCE = 7
-QUIT_BUTTON_PIN = -1
-PARKING_ID = 000000
+QUIT_BUTTON_PIN = 25
+PARKING_ID = '000001'
 MODE = 0
-LED1_PIN = -1
-LED2_PIN = -1
-LED3_PIN = -1
-LED4_PIN = -1
+LED1_PIN = 5
+LED2_PIN = 6
+LED3_PIN = 13
+LED4_PIN = 19
 
 print('[RPIS] Activate RPIS main process...')
 
