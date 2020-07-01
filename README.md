@@ -19,16 +19,6 @@ RPIS에 사용되는 R-Pi 센서를 위한 소스코드 입니다.
 필수 패키지 설치 및 소스코드를 R-Pi에 다운로드 후, *rpis_main.py* 실행
 ```
 [RPIS] Setting properties
-[RPIS] Set ultra-sounds sensor, TRIG pin : 5
-[RPIS] "5" is correct? (y/n) : y
-[RPIS] Set ultra-sounds sensor, ECHO pin : 6
-[RPIS] "6" is correct? (y/n) : y
-[RPIS] Set ultra-sounds sensor, distance : 25
-[RPIS] "25" is correct? (y/n) : y
-[RPIS] Set button pin : 24
-[RPIS] "24" is correct? (y/n) : y
-[RPIS] Set "parking_id" : 123456
-[RPIS] "123456" is correct? (y/n) : y
 [RPIS] Set mode (0: coming, 1: outgoing) : 0
 [RPIS] "0" is correct? (y/n) : y
 [RPIS] Activate RPIS main process...
